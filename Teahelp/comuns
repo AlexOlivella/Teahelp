@@ -1,0 +1,20 @@
+COLORS:
+
+Color header: '#00E0B2'
+Color botons: '#00E0B2'
+
+
+MIDES:
+title:"",
+headerStyle: {
+    backgroundColor: '#00E0B2'
+},
+headerTintColor: '#fff',
+headerTitleStyle: {
+    fontSize: 20,
+},
+
+Container per iconos:
+    flex:8
+botons: 
+    flex:1
