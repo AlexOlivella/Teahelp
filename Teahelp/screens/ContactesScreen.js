@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOp
 import { Header, Icon, SearchBar, ListItem, } from 'react-native-elements'
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import firebase from 'firebase'
+import call from 'react-native-phone-call';
+import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 
 
 export default class ContactesScreen extends Component {
@@ -13,17 +15,18 @@ export default class ContactesScreen extends Component {
             search: '',
             llistaContactesAux: [],
             isLoading: true,
-
+            modeEdicio: "",
 
         }
         this.arrayHolder = [];
 
     }
     componentDidMount() {
+        this.getModeEdicio()
         this.getLlistaContactes()
     }
     static navigationOptions = {
-        header: null
+        headerShown: false
     }
     obrirDrawer = () => {
         this.props.navigation.openDrawer();
@@ -33,14 +36,22 @@ export default class ContactesScreen extends Component {
         this.props.navigation.navigate("AfegirContactes", { refresh: () => this.refresh() })
     }
 
+    async getModeEdicio() {
+        var user = firebase.auth().currentUser
+        let resultat = await FirebaseAPI.getDadesUsuari(user.uid)
+        this.setState({
+            modeEdicio: resultat.modeEdicio
+        })
+    }
+
     async getLlistaContactes() {
         let user = firebase.auth().currentUser
         let resultat = await FirebaseAPI.getLlistaContactes(user.uid)
-        console.log("resultat", resultat)
+        //console.log("resultat", resultat)
         this.setState(
             {
                 llistaContactes: resultat,
-                llistaContactesAux:resultat,
+                llistaContactesAux: resultat,
                 isLoading: false
             },
             function () {
@@ -49,11 +60,11 @@ export default class ContactesScreen extends Component {
 
     }
     refresh() {
-		this.getLlistaContactes()
-	}
+        this.getLlistaContactes()
+    }
 
     search = text => {
-        console.log(text);
+        //console.log(text);
     };
     clear = () => {
         this.search.clear();
@@ -74,8 +85,17 @@ export default class ContactesScreen extends Component {
             search: text,
         });
     }
-
+    call(numero) {
+        //handler to make a call
+        const args = {
+          number: numero,
+          prompt: false,
+        };
+        call(args).catch(console.error);
+      };
     render() {
+        let rightC
+        if (this.state.modeEdicio) rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirContactes()} ></Icon>
         if (this.state.isLoading) return (<View style={{ flex: 1 }}>
             <View>
                 <Header
@@ -83,7 +103,7 @@ export default class ContactesScreen extends Component {
                     backgroundColor="#00E0B2"
                     leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                     centerComponent={{ text: 'CONTACTES', style: { color: '#fff', fontSize: 20, } }}
-                    rightComponent={<Icon name='settings' color="#fff" onPress={() => this.afegirContactes()} ></Icon>}
+                    rightComponent={rightC}
                 />
             </View>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -97,7 +117,7 @@ export default class ContactesScreen extends Component {
                         backgroundColor="#00E0B2"
                         leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                         centerComponent={{ text: 'CONTACTES', style: { color: '#fff', fontSize: 20, } }}
-                        rightComponent={<Icon name='settings' color="#fff" onPress={() => this.afegirContactes()} ></Icon>}
+                        rightComponent={rightC}
                     />
 
                 </View>
@@ -108,7 +128,7 @@ export default class ContactesScreen extends Component {
                             <View style={styles.llistaBuida}>
                                 <Text style={styles.text}>Encara no has afegit cap contacte a la llista de contactes, prova d'afegir-ne un fent click a l'icona de dalt a la dreta</Text>
                             </View> :
-                            <View>
+                            <View >
                                 <SearchBar
                                     round
                                     searchIcon={{ size: 24 }}
@@ -123,10 +143,12 @@ export default class ContactesScreen extends Component {
                                 <FlatList
                                     data={this.state.llistaContactes}
                                     renderItem={({ item }) =>
-                                        <TouchableOpacity onPress={() => { }}>
+                                        <TouchableOpacity onPress={() => { this.call(item.numero)}}>
                                             <ListItem containerStyle={{ backgroundColor: "#fff", borderBottomWidth: 1, borderColor: '#00E0B2' }}
                                                 title={item.nom}
                                                 subtitle={item.numero}
+                                                titleStyle={{ fontSize: 20 }}
+                                                subtitleStyle={{ paddingTop: 10, fontSize: 20 }}
                                             />
                                         </TouchableOpacity>
                                     }
@@ -147,7 +169,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     llistaBuida: {
-        paddingTop: 200
+        paddingTop: 200,
+        paddingHorizontal:10,
     },
     text: {
         fontSize: 30,

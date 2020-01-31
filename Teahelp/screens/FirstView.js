@@ -15,7 +15,7 @@ export default class LoginScreen extends Component {
 
   static navigationOptions = {
     //To hide the ActionBar/NavigationBar
-    header: null,
+    headerShown: false,
   };
 
   handleLoad = () => {
@@ -54,7 +54,10 @@ export default class LoginScreen extends Component {
       return (
         <View style={styles.container}>
           <View style={styles.seccioTitol}>
-            <Text style={{ fontSize: 30 }}> Teahelp </Text>
+            <Text style={{ fontSize: 30 }}> TEAHELP </Text>
+          </View>
+          <View style={styles.logo}>
+            <Image source={require("./images/Logo.png")} style={{}}></Image>
           </View>
           <View style={styles.seccioBoto}>
             <View style={{ width: "90%", paddingBottom: 10 }}>
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
   },
   seccioTitol: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
   },
@@ -85,5 +88,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
+  logo:{
+    flex:1,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+
 
 });

@@ -18,3 +18,23 @@ Container per iconos:
     flex:8
 botons: 
     flex:1
+
+
+transformaData(time) {
+        if (time) {
+            let data = new Date(time);
+            var date = data.getDate(); //Current Date
+            var month = data.getMonth() + 1; //Current Month
+            var year = data.getFullYear(); //Current Year
+            if (date < 10) date = '0' + date
+            if (month < 10) month = '0' + month
+            return date + '-' + month + '-' + year
+        }
+        else return ""
+}
+
+
+
+obrirDrawer = () => {
+        this.props.navigation.openDrawer();
+    }

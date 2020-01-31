@@ -12,7 +12,7 @@ export default class NomClasse extends Component {
     }
 
     static navigationOptions = {
-        header: null
+        headerShown: false
     }
     render() {
 

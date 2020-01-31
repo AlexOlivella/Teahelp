@@ -14,8 +14,9 @@ export default class ForgotPasword extends Component {
     }
     static navigationOptions = {
         headerStyle: {
-            backgroundColor: '#2089dc'
+            backgroundColor: '#00E0B2'
         },
+        title:"RESTABLIR CONTRASSENYA",
         headerTintColor: '#fff',
         headerTitleStyle: {
             fontSize: 20,
@@ -26,14 +27,14 @@ export default class ForgotPasword extends Component {
             //alert('Success')
             return true;
         } else {
-            alert('Please enter a valid email');
+            alert('Introdueix un email vàlid');
         }
     }
     forgotPassword(Email) {
         if (this.checkInput()) {
             firebase.auth().sendPasswordResetEmail(Email.trim())
                 .then(function (user) {
-                    alert('Please check your email...')
+                    alert('Comprova el teu email...')
                 }).catch(function (e) {
                     alert(e)
                 })
@@ -45,7 +46,7 @@ export default class ForgotPasword extends Component {
             <View style={styles.container}>
                 <View style={{ flex: 0.5 }}></View>
                 <View style={{ flex: 1, alignItems: 'center' }}>
-                    <Text style={{ fontSize: 30 }}>Forgot Password?</Text>
+                    <Text style={{ fontSize: 30, textAlign:'center' }}>T'has oblidat de la contrassenya?</Text>
                 </View>
                 <View style={{ flex: 1 }}>
                     <TextField
@@ -56,9 +57,10 @@ export default class ForgotPasword extends Component {
                     />
                 </View>
                 <Button
-                    title='Send Email'
+                    title='Envia Email'
+                    color="#00E0B2"
                     onPress={() => this.forgotPassword(this.state.email)}>
-
+                    
                 </Button>
                 <View style={{ flex: 3 }}></View>
             </View>

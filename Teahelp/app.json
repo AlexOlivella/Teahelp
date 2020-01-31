@@ -24,7 +24,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.yourcompany.yourappname",
+      "config": {
+        "googleMapsApiKey":"AIzaSyCnhp8jI7Rz0eT9BKaeGd8977ZQrn81pWY"    
+     }
+    },
+    "android": {
+      "config": {
+        "googleMaps": { "apiKey": "AIzaSyCnhp8jI7Rz0eT9BKaeGd8977ZQrn81pWY" }   
+     }
     }
   }
 }

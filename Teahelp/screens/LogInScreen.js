@@ -20,7 +20,7 @@ export default class LoginScreen extends Component {
 
   static navigationOptions = {
     //To hide the ActionBar/NavigationBar
-    header: null,
+    headerShown: false,
   };
   CheckTextInput = (email, password) => {
     //Handler for the Submit onPress
@@ -74,6 +74,7 @@ export default class LoginScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.seccioTitol}>
+          <Image source={require('./images/Logo.png')} style={{}}></Image>
         </View>
         <View style={styles.seccioEscriure}>
           <View style={{}}>

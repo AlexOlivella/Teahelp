@@ -14,6 +14,10 @@ import PictogramesScreen from './screens/PictogramesScreen'
 import DireccionsScreen from './screens/DireccionsScreen'
 import UbicacióScreen from './screens/UbicacióScreen'
 import AfegirContactes from './screens/AfegirContactes';
+import PerfilUsuari from './screens/PerfilUsuari'
+import AfegirDireccions from './screens/AfegirDireccions';
+import AfegirPreferencies from './screens/AfegirPreferencies'
+import AfegirPictogrames from './screens/AfegirPictogrames'
 
 const AuthStack = createStackNavigator(
   {
@@ -32,9 +36,11 @@ const Contactes = createStackNavigator(
 )
 const Pictogrames = createStackNavigator(
   {
-    PictogramesScreen: { screen: PictogramesScreen }
+    PictogramesScreen: { screen: PictogramesScreen },
+    AfegirPictogrames:{screen:AfegirPictogrames}
   }
 )
+
 const Ubicacio = createStackNavigator(
   {
     UbicacióScreen: { screen: UbicacióScreen }
@@ -42,15 +48,29 @@ const Ubicacio = createStackNavigator(
 )
 const Direccio = createStackNavigator(
   {
-    DireccionsScreen: { screen: DireccionsScreen }
+    DireccionsScreen: { screen: DireccionsScreen },
+    AfegirDireccions:{screen:AfegirDireccions}
   }
 )
+
+const Perfil = createStackNavigator(
+  {
+    PerfilUsuari: { screen: PerfilUsuari }
+  }
+)
+const Home = createStackNavigator(
+  {
+    HomeScreen: { screen: HomeScreen },
+    AfegirPreferencies:{screen: AfegirPreferencies},
+  },
+)
 const MainDrawer = createDrawerNavigator({
-  BOTÓ: { screen: HomeScreen },
+  BOTÓ: Home,
   PICTOGRAMES: Pictogrames,
   CONTACTES: Contactes,
   UBICACIÓ: Ubicacio,
   DIRECCIONS: Direccio,
+  PERFIL: Perfil,
 },
   {
     hideStatusBar: true,

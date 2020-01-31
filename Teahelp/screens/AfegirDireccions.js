@@ -9,28 +9,24 @@ import { Header, Icon, SearchBar, ListItem, } from 'react-native-elements'
 
 
 
-export default class AfegirContactes extends Component {
+export default class AfegirDireccions extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            valid: "",
-            type: "",
-            value: "",
-            nomContacte: "",
-            nomPle: "",
-            numPle: "",
+            llistaDireccions: "",
             loading: "",
             refresh: this.props.navigation.state.params.refresh(),
-            llistaContactes: "",
-            loadingData: true
+            loadingData: true,
+            nomDireccio: "",
+            direccio: "",
+            nomPle: "",
+            direccioPlena: "",
 
         };
-        this.updateInfo = this.updateInfo.bind(this);
-        this.renderInfo = this.renderInfo.bind(this);
     }
 
     static navigationOptions = {
-        title: "AFEGIR CONTACTES",
+        title: "AFEGIR DIRECCIONS",
         headerStyle: {
             backgroundColor: '#00E0B2'
         },
@@ -41,56 +37,28 @@ export default class AfegirContactes extends Component {
     }
 
     componentDidMount() {
-        this.getLlistaContactes()
+        this.getLlistaDireccions()
     }
 
-    async getLlistaContactes() {
+    async getLlistaDireccions() {
         let user = firebase.auth().currentUser
-        let resultat = await FirebaseAPI.getLlistaContactes(user.uid)
+        let resultat = await FirebaseAPI.getLlistaDireccions(user.uid)
         //console.log("resultat", resultat)
         this.setState(
             {
-                llistaContactes: resultat,
+                llistaDireccions: resultat,
                 loadingData: false
             })
 
     }
-    updateInfo() {
-        this.setState({
-            valid: this.phone.isValidNumber(),
-            type: this.phone.getNumberType(),
-            value: this.phone.getValue(),
-        });
-    }
     refresh() {
-        this.getLlistaContactes()
-    }
-    renderInfo() {
-        if (this.state.value) {
-            return (
-                <View style={styles.info}>
-                    <Text>
-                        Is Valid:{" "}
-                        <Text style={{ fontWeight: "bold" }}>
-                            {this.state.valid.toString()}
-                        </Text>
-                    </Text>
-                    <Text>
-                        Type: <Text style={{ fontWeight: "bold" }}>{this.state.type}</Text>
-                    </Text>
-                    <Text>
-                        Value:{" "}
-                        <Text style={{ fontWeight: "bold" }}>{this.state.value}</Text>
-                    </Text>
-                </View>
-            );
-        }
+        this.getLlistaDireccions()
     }
 
-    esborrarNumero(numero) {
+    esborrarDireccio(nomDireccio) {
         Alert.alert(
-            'Esborrar contacte',
-            'Estàs segur/a de que vols esborrar aquest contacte?',
+            'Esborrar direcció',
+            'Estàs segur/a de que vols esborrar aquesta direcció?',
             [
                 { text: 'Cancelar', onPress: () => { return null } },
                 {
@@ -98,13 +66,14 @@ export default class AfegirContactes extends Component {
                         let error
                         let user = firebase.auth().currentUser
                         this.setState({ loading: true })
-                        error = await FirebaseAPI.esborrarContacte(user.uid, numero)
+                        error = await FirebaseAPI.esborrarDireccio(user.uid, nomDireccio)
                         this.setState({ loading: false })
-
-                        ToastAndroid.show("Contacte esborrat correctament", ToastAndroid.SHORT)
-                        this.props.navigation.state.params.refresh()
-                        this.refresh()
-
+                        if (error) Alert.alert("Alerta", error)
+                        else {
+                            ToastAndroid.show("Direcció esborrada correctament", ToastAndroid.SHORT)
+                            this.props.navigation.state.params.refresh()
+                            this.refresh()
+                        }
 
                     }
 
@@ -115,10 +84,7 @@ export default class AfegirContactes extends Component {
     }
 
     checkInputs() {
-        if (this.state.valid) {
-            return true
-        }
-        else Alert.alert("Alerta", "El número que has afegit no és vàlid")
+        return true
     }
     render() {
         let loader
@@ -129,23 +95,18 @@ export default class AfegirContactes extends Component {
                 <View style={styles.containerInputs}>
                     <View style={styles.inputs}>
                         <TextField
-                            label="Nom del contacte"
+                            label="Nom de la direcció"
                             autoCapitalize="words"
-                            onChangeText={nomContacte => this.setState({ nomContacte, nomPle: true })}
-                            value={this.state.nomContacte}
+                            onChangeText={nomDireccio => this.setState({ nomDireccio, nomPle: true })}
+                            value={this.state.nomDireccio}
                         />
                     </View>
                     <View style={styles.inputs}>
-                        <PhoneInput
-                            ref={ref => {
-                                this.phone = ref;
-                            }}
-                            style={{ borderBottomWidth: 1, paddingBottom: 10, borderBottomColor: '#D3D0D0' }}
-                            initialCountry='es'
-                            onChangePhoneNumber={() => this.setState({ numPle: true })}
-                            cancelText="Cancelar"
-                            confirmText="Confirmar"
-                            textProps={{ placeholder: 'Exemple: 123456789' }}
+                        <TextField
+                            label="Direcció"
+                            autoCapitalize="words"
+                            onChangeText={direccio => this.setState({ direccio, direccioPlena: true })}
+                            value={this.state.direccio}
                         />
                     </View>
                     {/*<TouchableOpacity onPress={this.updateInfo} style={styles.button}>
@@ -155,14 +116,13 @@ export default class AfegirContactes extends Component {
                         {this.renderInfo()}*/}
 
                     {loader}
-                    {this.state.nomPle && this.state.numPle ?
+                    {this.state.nomPle && this.state.direccioPlena ?
                         <View style={{ paddingBottom: 20 }}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    this.updateInfo()
                                     Alert.alert(
-                                        'Afegir contacte',
-                                        'Estàs segur/a de que vols afegir aquest contacte?',
+                                        'Afegir direcció',
+                                        'Estàs segur/a de que vols afegir aquesta direcció?',
                                         [
                                             { text: 'Cancelar', onPress: () => { return null } },
                                             {
@@ -171,12 +131,12 @@ export default class AfegirContactes extends Component {
                                                     let user = firebase.auth().currentUser
                                                     if (this.checkInputs()) {
                                                         this.setState({ loading: true })
-                                                        error = await FirebaseAPI.creaContacte(user.uid, this.state.nomContacte, this.state.value)
+                                                        error = await FirebaseAPI.creaDireccio(user.uid, this.state.nomDireccio, this.state.direccio)
                                                         this.setState({ loading: false })
 
                                                         if (error) Alert.alert("Alerta", error)
                                                         else {
-                                                            ToastAndroid.show("Contacte afegit correctament", ToastAndroid.SHORT)
+                                                            ToastAndroid.show("Direcció afegida correctament", ToastAndroid.SHORT)
                                                             this.props.navigation.state.params.refresh()
                                                             this.refresh()
                                                         }
@@ -192,7 +152,7 @@ export default class AfegirContactes extends Component {
                                 style={{ width: '96%', alignItems: 'center', height: 52, justifyContent: 'center', backgroundColor: '#00E0B2' }}
                             >
                                 <View >
-                                    <Text style={{ fontSize: 15, color: '#fff', fontWeight: 'bold' }}>AFEGIR CONTACTE</Text>
+                                    <Text style={{ fontSize: 15, color: '#fff', fontWeight: 'bold' }}>AFEGIR DIRECCIÓ</Text>
 
                                 </View>
                             </TouchableOpacity>
@@ -203,20 +163,19 @@ export default class AfegirContactes extends Component {
 
                 </View>
                 <FlatList
-                    data={this.state.llistaContactes}
+                    data={this.state.llistaDireccions}
                     renderItem={({ item }) =>
                         <ListItem containerStyle={{ backgroundColor: "#fff", borderBottomWidth: 1, borderColor: '#00E0B2', }}
                             title={item.nom}
-                            subtitle={item.numero}
+                            subtitle={item.direccio}
                             titleStyle={{ fontSize: 20 }}
                             subtitleStyle={{ paddingTop: 10, fontSize: 20 }}
                             rightElement={
-
-                                <Icon name="delete" onPress={() => this.esborrarNumero(item.numero)}></Icon>
+                                <Icon name="delete" onPress={() => this.esborrarDireccio(item.nom)}></Icon>
                             }
                         />
                     }
-                    keyExtractor={item => item.numero}
+                    keyExtractor={item => item.nom}
                 />
             </View>
         );
