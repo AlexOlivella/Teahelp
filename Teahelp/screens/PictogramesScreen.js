@@ -1,28 +1,28 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { Header, Icon, SearchBar, ListItem, } from 'react-native-elements'
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import firebase from 'firebase'
-import call from 'react-native-phone-call';
-import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 
 
 export default class ContactesScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false,
+            isLoading: true,
             modeEdicio: "",
-
+            llistaPictogrames: "",
+            currentUser: "",
         }
-        this.arrayHolder = [];
 
     }
-    refresh(){
+    refresh() {
         this.getModeEdicio()
+        this.getLlistaPictogrames()
     }
     componentDidMount() {
         this.getModeEdicio()
+        this.getLlistaPictogrames()
     }
     static navigationOptions = {
         headerShown: false
@@ -42,8 +42,17 @@ export default class ContactesScreen extends Component {
             modeEdicio: resultat.modeEdicio
         })
     }
+    async getLlistaPictogrames() {
+        let user = firebase.auth().currentUser
+        let resultat = await FirebaseAPI.getLListaPictogrames(user.uid)
+        console.log("resultat imatge", resultat)
+        this.setState({
+            currentUser: user,
+            llistaPictogrames: resultat,
+            isLoading: false
+        })
+    }
 
-   
 
     render() {
         let rightC
@@ -75,7 +84,20 @@ export default class ContactesScreen extends Component {
                 </View>
                 <SafeAreaView style={styles.container}>
                     <ScrollView>
-
+                        <FlatList
+                            data={this.state.llistaPictogrames}
+                            renderItem={({ item }) =>
+                                <TouchableOpacity onPress={() => { }}>
+                                    <ListItem containerStyle={{ backgroundColor: "#fff", borderBottomWidth: 1, borderColor: '#00E0B2' }}
+                                        title={item.accio}
+                                        rightIcon={<Image source={{uri: item.imatge}} style={{width:100, height:100}} resizeMode="contain"></Image>}
+                                        titleStyle={{ fontSize: 20 }}
+                                        subtitleStyle={{ paddingTop: 10, fontSize: 20 }}
+                                    />
+                                </TouchableOpacity>
+                            }
+                            keyExtractor={item => item.accio}
+                        />
                     </ScrollView>
                 </SafeAreaView>
             </View>
@@ -91,7 +113,7 @@ const styles = StyleSheet.create({
     },
     llistaBuida: {
         paddingTop: 200,
-        paddingHorizontal:10,
+        paddingHorizontal: 10,
     },
     text: {
         fontSize: 30,

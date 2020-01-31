@@ -2,6 +2,7 @@
 import firebase from './../src/config';
 
 const db = firebase.firestore();
+import 'firebase/storage';
 
 export async function createUser(firstName, lastName, password, email, gender, transtorn, birthday, PINParental) {
     let docRef
@@ -100,9 +101,11 @@ export async function esborrarContacte(user_uid, numero) {
     let docRef = db.collection("Usuaris").doc(user_uid).collection("Contactes").doc(numero)
     return await docRef.delete().then(function () {
         //console.log("Document successfully deleted!");
+        let docRef2 = db.collection("Usuaris").doc(user_uid).collection("Preferencies")
     }).catch(function (error) {
         console.error("Error removing document: ", error);
     });
+
 }
 export async function creaDireccio(user_uid, nomDireccio, direccio) {
     let errorR
@@ -170,7 +173,7 @@ export async function crearPreferencies(user_uid, numContacte1, nomContacte1, nu
         //console.error("Error writing document: ", error);
     });;
 }
-export async function getLlistaPreferencies(user_uid){
+export async function getLlistaPreferencies(user_uid) {
     let resultat = []
     let docRef = db.collection("Usuaris").doc(user_uid).collection("Preferencies")
     await docRef.get().then(function (querySnapshot) {
@@ -181,4 +184,54 @@ export async function getLlistaPreferencies(user_uid){
         });
     });
     return resultat
+}
+export async function crearPictograma(user_uid, accio, url) {
+    let errorR
+    let docRef = db.collection("Usuaris").doc(user_uid).collection("Pictogrames").doc(accio)
+    return docRef.get().then(async function (doc) {
+        if (doc.exists) {
+            errorR = "Ja tens un pictograma amb aquesta acció"
+            return errorR
+        }
+        else await docRef.set({
+            accio: accio, 
+            url: url
+        }).then(function (docRef) {
+
+        }).catch(function (error) {
+            //console.error("Error writing document: ", error);
+        });;
+    }).catch(function (error) {
+        //console.log("Error getting document:", error);
+    });
+}
+export async function getLListaPictogrames(user_uid) {
+    let resultat = []
+    let docRef = db.collection("Usuaris").doc(user_uid).collection("Pictogrames")
+
+    await docRef.get().then(function (querySnapshot) {
+        querySnapshot.forEach(async function (doc) {
+            // doc.data() is never undefined for query doc snapshots
+            //console.log(doc.id, " => ", doc.data());
+            /*let url = await firebase.storage().ref(user_uid + '/pictogrames/' + doc.id).getDownloadURL();
+            console.log("url dins dde firebase", url)*/
+            resultat.push({ accio: doc.id, imatge: doc.data().url })
+        });
+    });
+    return resultat
+}
+export async function esborrarPictograma(user_uid, accio){
+    let docRef = db.collection("Usuaris").doc(user_uid).collection("Pictogrames").doc(accio)
+    let storageRef = firebase.storage().ref().child(user_uid + '/pictogrames/' + accio)
+    
+    return await docRef.delete().then(async function () {
+        //console.log("Document successfully deleted!");
+        await storageRef.delete().then(function() {
+            // File deleted successfully
+          }).catch(function(error) {
+            // Uh-oh, an error occurred!
+          });
+    }).catch(function (error) {
+        console.error("Error removing document: ", error);
+    });
 }
