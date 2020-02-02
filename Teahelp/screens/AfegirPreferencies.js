@@ -34,7 +34,7 @@ export default class AfegirPreferencies extends Component {
         title: "AFEGIR PREFERÈNCIES",
         headerStyle: {
             backgroundColor: '#00E0B2'
-        }, 
+        },
         headerTintColor: '#fff',
         headerTitleStyle: {
             fontSize: 20,
@@ -57,24 +57,27 @@ export default class AfegirPreferencies extends Component {
             })
 
     }
-    refresh() {
-        this.getLlistaContactes()
-    }
+   
 
-    async getLlistaPreferencies(){
+    async getLlistaPreferencies() {
         let user = firebase.auth().currentUser
         let resultat = await FirebaseAPI.getLlistaPreferencies(user.uid)
         console.log(resultat)
-        this.setState({
-            numContacte1: resultat[0].numContacte,
-            nomContacte1: resultat[0].nomContacte,
-            numContacte2: resultat[1].numContacte,
-            nomContacte2: resultat[1].nomContacte,
-            numContacte3: resultat[2].numContacte,
-            nomContacte3: resultat[2].nomContacte,
-            loadingData: false,
+        if (resultat.length != 0) {
+            this.setState({
+                numContacte1: resultat[0].numContacte,
+                nomContacte1: resultat[0].nomContacte,
+                numContacte2: resultat[1].numContacte,
+                nomContacte2: resultat[1].nomContacte,
+                numContacte3: resultat[2].numContacte,
+                nomContacte3: resultat[2].nomContacte,
+                loadingData: false,
 
-        })
+            })
+        }
+        else {
+            this.setState({loadingData: false,})
+        }
     }
     checkInputs() {
 
@@ -177,6 +180,8 @@ export default class AfegirPreferencies extends Component {
                                             await FirebaseAPI.crearPreferencies(user.uid, this.state.numContacte1, this.state.nomContacte1,
                                                 this.state.numContacte2, this.state.nomContacte2, this.state.numContacte3, this.state.nomContacte3)
                                             this.setState({ loading: false })
+                                            this.props.navigation.state.params.refresh()
+
                                             ToastAndroid.show("Preferències canviades correctament", ToastAndroid.SHORT)
 
 
@@ -225,8 +230,8 @@ let styles = StyleSheet.create({
         //flex:1
         width: "100%"
     },
-    dropdown:{
-        width:"100%",
+    dropdown: {
+        width: "100%",
 
     },
 
