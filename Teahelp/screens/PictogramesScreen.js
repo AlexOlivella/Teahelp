@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, Image, Modal, Button } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, Image, Modal, Button, Alert } from 'react-native';
 import { Header, Icon, SearchBar, ListItem, } from 'react-native-elements'
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import firebase from 'firebase'
@@ -14,8 +14,8 @@ export default class ContactesScreen extends Component {
             modeEdicio: "",
             llistaPictogrames: "",
             currentUser: "",
-            selected:{
-                
+            selected: {
+
             },
         }
 
@@ -25,7 +25,7 @@ export default class ContactesScreen extends Component {
         selected[element] = !selected[element];
         console.log(selected);
         this.setState({ selected: selected })
-        
+
     }
     refresh() {
         this.getModeEdicio()
@@ -81,14 +81,17 @@ export default class ContactesScreen extends Component {
             if (this.state.selected[opcio])
                 opcions.push(opcio)
         }
-        this.props.navigation.navigate(
+        if (opcions.length != 0) {
+            this.props.navigation.navigate(
                 "MostrarVullPictogrames",
                 {
                     opcions: opcions
                 }
             )
-            //console.log("medicaments")
-        
+        }
+        else Alert.alert("ALERTA", "TRIA UN PICTOGRAMA DE LA LLISTA")
+        //console.log("medicaments")
+
     }
 
     render() {
@@ -148,7 +151,21 @@ export default class ContactesScreen extends Component {
                         />
                     </ScrollView>
                 </SafeAreaView>
-                <Button onPress={()=> this.mostraVull()} title="Mostrar vull"></Button>
+
+                <View style={{ justifyContent: 'center', alignItems: 'center', paddingBottom: 10, backgroundColor: '#fff' }}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            this.mostraVull()
+                        }}
+                        title="Cancel"
+                        style={{ width: '96%', alignItems: 'center', height: 52, justifyContent: 'center', backgroundColor: '#00E0B2' }}
+                    >
+                        <View >
+                            <Text style={{ fontSize: 15, color: '#fff', fontWeight: 'bold' }}>COSES QUE VULL</Text>
+
+                        </View>
+                    </TouchableOpacity>
+                </View>
             </View>
 
         );
@@ -175,7 +192,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     seleccionat: {
-        backgroundColor: "#DADDE2",
+        backgroundColor: "#C9FCE9",
         borderBottomWidth: 1,
         borderColor: '#00E0B2',
         flexDirection: 'row'

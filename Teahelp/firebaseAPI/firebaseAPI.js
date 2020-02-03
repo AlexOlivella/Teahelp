@@ -299,3 +299,24 @@ export async function esborrarPictograma(user_uid, accio) {
         console.error("Error removing document: ", error);
     });
 }
+
+export async function getLlistaVullPictogrames(user_uid, opcions) {
+    let resultat = []
+    let docRef = db.collection("Usuaris").doc(user_uid).collection("Pictogrames")
+
+    await docRef.get().then(function (querySnapshot) {
+        querySnapshot.forEach(async function (doc) {
+            // doc.data() is never undefined for query doc snapshots
+            //console.log(doc.id, " => ", doc.data());
+            /*let url = await firebase.storage().ref(user_uid + '/pictogrames/' + doc.id).getDownloadURL();
+            console.log("url dins dde firebase", url)*/
+            for(let i =0; i<opcions.length; i++){
+                
+                if(doc.id == opcions[i])
+                resultat.push({ accio: doc.id, imatge: doc.data().url })
+
+            }
+        });
+    });
+    return resultat
+}

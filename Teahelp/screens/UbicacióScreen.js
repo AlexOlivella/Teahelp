@@ -100,9 +100,7 @@ export default class UbicacióScreen extends Component {
         this.setState({ location, loading: false, });
         this.getInitialState()
     };
-    returnPosition() {
 
-    }
     render() {
         let backGroundHeader
         this.state.modeEdicio ? backGroundHeader = "#D51313" : backGroundHeader = "#00E0B2"

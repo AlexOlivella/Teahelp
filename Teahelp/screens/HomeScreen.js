@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, Button, Image, Alert } from 'react-native';
 import { Dimensions } from 'react-native'
 const { width, height } = Dimensions.get('screen');
 import firebase from 'firebase'
@@ -8,7 +8,13 @@ import { Header, Icon } from 'react-native-elements'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as SMS from 'expo-sms';
 import { EventRegister } from 'react-native-event-listeners'
+import LocationIQ from 'react-native-locationiq';
+import getDirections from 'react-native-google-maps-directions'
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
+LocationIQ.init("82b56fb65371c7"); // use a valid API key
 
 export default class HomeScreen extends Component {
 
@@ -21,6 +27,10 @@ export default class HomeScreen extends Component {
 			numPreferit3: "",
 			nomUsuari: "",
 			data: 'no data',
+			location:"",
+			currentLatitud: "",
+			currentLongitud: "",
+			currentAdress: "",
 		};
 
 	}
@@ -76,23 +86,67 @@ export default class HomeScreen extends Component {
 		})
 
 	}
-
+    componentWillMount() {
+        if (Platform.OS === 'android' && !Constants.isDevice) {
+            this.setState({
+                errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+            });
+        } else {
+            this._getLocationAsync();
+		}
+	}
 	async getDades() {
 		let user = firebase.auth().currentUser
 		let result = await FirebaseAPI.getDadesUsuari(user.uid)
 		console.log(result)
 		this.setState({ nomUsuari: result.firstName + " " + result.lastName })
 	}
+	_getLocationAsync = async () => {
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {
+            this.setState({
+                errorMessage: "No s'ha permès l'accés a l'ubicació",
+            });
+        }
+        this.setState({ loading: true })
+        let location = await Location.getCurrentPositionAsync({});
+		this.setState({ 
+			location, 
+			loading: false,
+            latitude: this.state.location.coords.latitude,
+            longitude: this.state.location.coords.longitude,
+            region: regionInicial
+
+		})
+		this.getAddress()
+	};
+	
+
 	async trucaPreferits() {
+		if(this.state.numPreferit1 != "" ){
+			this._getLocationAsync()
 		const isAvailable = await SMS.isAvailableAsync();
 		if (isAvailable) {
 
 			const { result } = await SMS.sendSMSAsync(
 				[this.state.numPreferit1, this.state.numPreferit2, this.state.numPreferit3,],
-				"Hola, sóc " + this.state.nomUsuari + " i necessito ajuda"
+				"Hola, sóc " + this.state.nomUsuari + " i necessito ajuda, estic a " + this.state.currentAdress
 			);
+		}}
+		else {
+			Alert.alert("Alerta", "No podem enviar cap missatge perquè no tens cap contacte agregat, prova d'afegir-ne un a la pantalla de contactes i afegeix-los a preferits")
 		}
 
+	}
+	async getAddress(){
+		var adress
+		await LocationIQ.reverse(this.state.currentLatitud, this.state.currentLongitud)
+        .then(json => {
+            address = json.address;
+            console.log(adress);
+        })
+		.catch(error => console.warn(error));
+		this.setState({currentAdress: adress})
 	}
 	render() {
 		let rightC
