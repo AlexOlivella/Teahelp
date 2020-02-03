@@ -4,6 +4,8 @@
     "slug": "Teahelp",
     "privacy": "public",
     "sdkVersion": "36.0.0",
+    "icon": "C:/Users/alexo/AndroidStudioProjects/Github/Teahelp/Teahelp/screens/images/Logo.png",
+
     "platforms": [
       "ios",
       "android",
@@ -11,18 +13,13 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
       "**/*"
     ],
+    
     "ios": {
       "bundleIdentifier": "com.yourcompany.yourappname",
       "config": {
@@ -30,9 +27,7 @@
      }
     },
     "android": {
-      "config": {
-        "googleMaps": { "apiKey": "AIzaSyCnhp8jI7Rz0eT9BKaeGd8977ZQrn81pWY" }   
-     }
+      "package": "com.teahelp.teahelp"
     }
   }
 }

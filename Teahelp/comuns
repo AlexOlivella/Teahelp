@@ -38,3 +38,6 @@ transformaData(time) {
 obrirDrawer = () => {
         this.props.navigation.openDrawer();
     }
+
+
+    color edicio = #D51313

@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOp
 import { Header, Icon, SearchBar, ListItem, } from 'react-native-elements'
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import firebase from 'firebase'
+import { EventRegister } from 'react-native-event-listeners'
 
 
 export default class ContactesScreen extends Component {
@@ -23,6 +24,18 @@ export default class ContactesScreen extends Component {
     componentDidMount() {
         this.getModeEdicio()
         this.getLlistaPictogrames()
+    }
+    componentWillMount(){
+		this.listener = EventRegister.addEventListener('modeEdicio', (data) => {
+            /*this.setState({
+				data: data.toString(),
+                modeEdicio:data.toString(),
+			})*/
+			this.getModeEdicio()
+        })
+	}
+	componentWillUnmount() {
+        EventRegister.removeEventListener(this.listener)
     }
     static navigationOptions = {
         headerShown: false
@@ -56,12 +69,18 @@ export default class ContactesScreen extends Component {
 
     render() {
         let rightC
-        if (this.state.modeEdicio) rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirPictograma()} ></Icon>
+        let backGroundHeader
+        if (this.state.modeEdicio){
+             rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirPictograma()} ></Icon>
+             backGroundHeader = "#D51313"
+
+            }
+            else   backGroundHeader = "#00E0B2"
         if (this.state.isLoading) return (<View style={{ flex: 1 }}>
             <View>
                 <Header
                     style={{ width: '100%' }}
-                    backgroundColor="#00E0B2"
+                    backgroundColor={backGroundHeader}
                     leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                     centerComponent={{ text: 'PICTOGRAMES', style: { color: '#fff', fontSize: 20, } }}
                     rightComponent={rightC}
@@ -75,7 +94,7 @@ export default class ContactesScreen extends Component {
                 <View>
                     <Header
                         style={{ width: '100%' }}
-                        backgroundColor="#00E0B2"
+                        backgroundColor={backGroundHeader}
                         leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                         centerComponent={{ text: 'PICTOGRAMES', style: { color: '#fff', fontSize: 20, } }}
                         rightComponent={rightC}

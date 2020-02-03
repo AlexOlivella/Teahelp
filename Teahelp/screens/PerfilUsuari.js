@@ -5,6 +5,7 @@ import firebase from 'firebase'
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import DialogInput from 'react-native-dialog-input';
 import Dialog from "react-native-dialog";
+import { EventRegister } from 'react-native-event-listeners'
 
 
 export default class PerfilUsuari extends Component {
@@ -74,12 +75,15 @@ export default class PerfilUsuari extends Component {
         this.getDadesUsuari()
     }
     async comprovaPIN(pin) {
-        if (this.state.PinParental == pin) {
+        if (this.state.PinParental == this.state.pinIntroduit) {
             await FirebaseAPI.canviarModeEdicio(this.state.currentUser.uid, this.state.modeEdicio)
             //Alert.alert("Alerta", "PIN Correcte", "El mode d'edició quedarà activat fins que es torni a desactivar")
             //
-            this.setState({ isDialogVisible: false })
+            this.setState({ isDialogVisible: false, pinIntroduit: "" })
+            EventRegister.emit('modeEdicio', true)
+
             this.refresh()
+
             Alert.alert("Alerta", "PIN Correcte")
         }
         else Alert.alert("Alerta", "PIN Incorrecte")
@@ -87,11 +91,15 @@ export default class PerfilUsuari extends Component {
 
     render() {
         //console.log("hola")
+        let backGroundHeader
+        this.state.modeEdicio ? backGroundHeader = "#D51313" : backGroundHeader = "#00E0B2"
+
+        console.log("pin parental", this.state.PinParental)
         if (this.state.gettingData) return (<View>
             <View style={{ flex: 1 }}>
                 <Header
                     style={{ width: '100%' }}
-                    backgroundColor="#00E0B2"
+                    backgroundColor={backGroundHeader}
                     leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                     centerComponent={{ text: "PERFIL D'USUARI", style: { color: '#fff', fontSize: 20, } }}
                 />
@@ -105,7 +113,7 @@ export default class PerfilUsuari extends Component {
                 <View>
                     <Header
                         style={{ width: '100%' }}
-                        backgroundColor="#00E0B2"
+                        backgroundColor={backGroundHeader}
                         leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                         centerComponent={{ text: "PERFIL D'USUARI", style: { color: '#fff', fontSize: 20, } }}
                     />
@@ -189,9 +197,10 @@ export default class PerfilUsuari extends Component {
                                 <Dialog.Input
                                     style={{ borderBottomWidth: 1 }}
                                     placeholder="Exemple: 0000"
+                                    secureTextEntry={true}
                                     onChangeText={(pinIntroduit) => this.setState({ pinIntroduit })}>
                                 </Dialog.Input>
-                                <Dialog.Button label="Cancelar" onPress={() => this.setState({ isDialogVisible: false })} />
+                                <Dialog.Button label="Cancelar" onPress={() => this.setState({ isDialogVisible: false, pinIntroduit: "" })} />
                                 <Dialog.Button label="Confirmar" onPress={() => this.comprovaPIN(this.state.pinIntroduit)} />
                             </Dialog.Container>}
                             {!this.state.modeEdicio ? <TouchableOpacity
@@ -218,6 +227,7 @@ export default class PerfilUsuari extends Component {
                                                         await FirebaseAPI.canviarModeEdicio(this.state.currentUser.uid, this.state.modeEdicio)
                                                         Alert.alert("Alerta", "Mode d'edició desactivat")
                                                         this.refresh()
+                                                        EventRegister.emit('modeEdicio', false)
                                                     }
 
                                                 },

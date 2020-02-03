@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, Linking } from 'react-native';
 import { Header, Icon, SearchBar, ListItem, } from 'react-native-elements'
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import firebase from 'firebase'
+import { EventRegister } from 'react-native-event-listeners'
+import getDirections from 'react-native-google-maps-directions'
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
 export default class DireccionsScreen extends Component {
     constructor(props) {
@@ -13,6 +18,8 @@ export default class DireccionsScreen extends Component {
             llistaDireccionsAux: [],
             isLoading: true,
             modeEdicio: "",
+            currentLatitud: "",
+            currentLongitud:"",
 
         }
         this.arrayHolder = [];
@@ -59,7 +66,18 @@ export default class DireccionsScreen extends Component {
     refresh() {
         this.getLlistaDireccions()
     }
-
+    componentWillMount() {
+        this.listener = EventRegister.addEventListener('modeEdicio', (data) => {
+            /*this.setState({
+				data: data.toString(),
+                modeEdicio:data.toString(),
+			})*/
+            this.getModeEdicio()
+        })
+    }
+    componentWillUnmount() {
+        EventRegister.removeEventListener(this.listener)
+    }
     search = text => {
         //console.log(text);
     };
@@ -82,14 +100,88 @@ export default class DireccionsScreen extends Component {
             search: text,
         });
     }
+    _getLocationAsync = async () => {
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {
+            this.setState({
+                errorMessage: 'Permission to access location was denied',
+            });
+        }
+        this.setState({ loading: true })
+        let location = await Location.getCurrentPositionAsync({});
+        this.setState({ location, loading: false });
+        //console.log(this.state.location.coords)
+    };
+
+    handleGetDirections = () => {
+        const data = {
+          destination: {
+            latitude: -33.8600024,
+            longitude: 18.697459
+          },
+          params: [
+            {
+              key: "travelmode",
+              value: "walking"        // may be "walking", "bicycling" or "transit" as well
+            },
+            {
+              key: "dir_action",
+              value: "navigate"       // this instantly initializes navigation using the given travel mode
+            }
+          ],/*
+          waypoints: [
+            {
+              latitude: -33.8600025,
+              longitude: 18.697452
+            },
+            {
+              latitude: -33.8600026,
+              longitude: 18.697453
+            },
+               {
+              latitude: -33.8600036,
+              longitude: 18.697493
+            }
+          ]*/
+        }
+     
+        getDirections(data)
+      }
+    /*openGps = () => {
+        var scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:'
+        var url = scheme + '37.484847,-122.148386'
+        this.openExternalApp(url)
+      }
+      openExternalApp = (url) => {
+        Linking.canOpenURL(url).then(supported => {
+          if (supported) {
+            Linking.openURL(url);
+          } else {
+            Alert.alert(
+              'ERROR',
+              'Unable to open: ' + url,
+              [
+                {text: 'OK'},
+              ]
+            );
+          }
+        });
+      }*/
     render() {
         let rightC
-        if (this.state.modeEdicio) rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirDireccions()} ></Icon>
+        let backGroundHeader
+        if (this.state.modeEdicio) {
+            rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirDireccions()} ></Icon>
+            backGroundHeader = "#D51313"
+
+        }
+        else backGroundHeader = "#00E0B2"
+
         if (this.state.isLoading) return (<View style={{ flex: 1 }}>
             <View>
                 <Header
                     style={{ width: '100%' }}
-                    backgroundColor="#00E0B2"
+                    backgroundColor={backGroundHeader}
                     leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                     centerComponent={{ text: 'DIRECCIONS', style: { color: '#fff', fontSize: 20, } }}
                     rightComponent={rightC}
@@ -103,7 +195,7 @@ export default class DireccionsScreen extends Component {
                 <View>
                     <Header
                         style={{ width: '100%' }}
-                        backgroundColor="#00E0B2"
+                        backgroundColor={backGroundHeader}
                         leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                         centerComponent={{ text: 'DIRECCIONS', style: { color: '#fff', fontSize: 20, } }}
                         rightComponent={rightC}
@@ -126,13 +218,13 @@ export default class DireccionsScreen extends Component {
                                     placeholder="Escriu aquí..."
                                     value={this.state.search}
                                     lightTheme
-                                    containerStyle={{ backgroundColor: '#00E0B2' }}
+                                    containerStyle={{ backgroundColor: backGroundHeader}}
                                     inputContainerStyle={{ backgroundColor: 'white' }}
                                 />
                                 <FlatList
                                     data={this.state.llistaDireccions}
                                     renderItem={({ item }) =>
-                                        <TouchableOpacity onPress={() => {}}>
+                                        <TouchableOpacity onPress={() => this.handleGetDirections()}>
                                             <ListItem containerStyle={{ backgroundColor: "#fff", borderBottomWidth: 1, borderColor: '#00E0B2' }}
                                                 title={item.nom}
                                                 subtitle={item.direccio}
@@ -159,7 +251,7 @@ const styles = StyleSheet.create({
     },
     llistaBuida: {
         paddingTop: 200,
-        paddingHorizontal:10
+        paddingHorizontal: 10
     },
     text: {
         fontSize: 30,

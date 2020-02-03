@@ -7,6 +7,7 @@ import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import { Header, Icon } from 'react-native-elements'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as SMS from 'expo-sms';
+import { EventRegister } from 'react-native-event-listeners'
 
 
 export default class HomeScreen extends Component {
@@ -18,7 +19,8 @@ export default class HomeScreen extends Component {
 			numPreferit1: "",
 			numPreferit2: "",
 			numPreferit3: "",
-			nomUsuari:"",
+			nomUsuari: "",
+			data: 'no data',
 		};
 
 	}
@@ -34,6 +36,19 @@ export default class HomeScreen extends Component {
 		this.getModeEdicio()
 		this.getLlistaPreferits()
 		this.getDades()
+
+	}
+	componentWillMount() {
+		this.listener = EventRegister.addEventListener('modeEdicio', (data) => {
+            /*this.setState({
+				data: data.toString(),
+                modeEdicio:data.toString(),
+			})*/
+			this.getModeEdicio()
+		})
+	}
+	componentWillUnmount() {
+		EventRegister.removeEventListener(this.listener)
 	}
 	refresh() {
 		this.getModeEdicio()
@@ -62,11 +77,11 @@ export default class HomeScreen extends Component {
 
 	}
 
-	async getDades(){
+	async getDades() {
 		let user = firebase.auth().currentUser
 		let result = await FirebaseAPI.getDadesUsuari(user.uid)
 		console.log(result)
-		this.setState({nomUsuari: result.firstName + " " + result.lastName})
+		this.setState({ nomUsuari: result.firstName + " " + result.lastName })
 	}
 	async trucaPreferits() {
 		const isAvailable = await SMS.isAvailableAsync();
@@ -81,14 +96,22 @@ export default class HomeScreen extends Component {
 	}
 	render() {
 		let rightC
-		if (this.state.modeEdicio) rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirPreferencies()} ></Icon>
+		let backGroundHeader
+		if (this.state.modeEdicio) {
+			rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirPreferencies()} ></Icon>
+			backGroundHeader = "#D51313"
+
+		}
+		else backGroundHeader = "#00E0B2"
+
+		console.log("modeedicio", this.state.modeEdicio)
 		return (
 
 			<View style={styles.container}>
 				<View>
 					<Header
 						style={{ width: '100%' }}
-						backgroundColor="#00E0B2"
+						backgroundColor={backGroundHeader}
 						leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
 						centerComponent={{ text: 'BOTÓ', style: { color: '#fff', fontSize: 20, } }}
 						rightComponent={rightC}
@@ -103,6 +126,9 @@ export default class HomeScreen extends Component {
 
 					</TouchableOpacity>
 				</View>
+				{ /*<View style={{flex:1}}>
+				<Text>{this.state.data}</Text>
+		</View>*/}
 			</View>
 		);
 	}

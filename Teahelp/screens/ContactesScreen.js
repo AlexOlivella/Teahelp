@@ -5,6 +5,7 @@ import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import firebase from 'firebase'
 import call from 'react-native-phone-call';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
+import { EventRegister } from 'react-native-event-listeners'
 
 
 export default class ContactesScreen extends Component {
@@ -31,7 +32,18 @@ export default class ContactesScreen extends Component {
     obrirDrawer = () => {
         this.props.navigation.openDrawer();
     }
-
+    componentWillMount(){
+		this.listener = EventRegister.addEventListener('modeEdicio', (data) => {
+            /*this.setState({
+				data: data.toString(),
+                modeEdicio:data.toString(),
+			})*/
+			this.getModeEdicio()
+        })
+	}
+	componentWillUnmount() {
+        EventRegister.removeEventListener(this.listener)
+    }
     afegirContactes() {
         this.props.navigation.navigate("AfegirContactes", { refresh: () => this.refresh() })
     }
@@ -95,12 +107,17 @@ export default class ContactesScreen extends Component {
       };
     render() {
         let rightC
-        if (this.state.modeEdicio) rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirContactes()} ></Icon>
+        let backGroundHeader 
+        if (this.state.modeEdicio){ 
+            rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirContactes()} ></Icon>
+            backGroundHeader = "#D51313"
+    }
+    else backGroundHeader = "#00E0B2"
         if (this.state.isLoading) return (<View style={{ flex: 1 }}>
             <View>
                 <Header
                     style={{ width: '100%' }}
-                    backgroundColor="#00E0B2"
+                    backgroundColor={backGroundHeader}
                     leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                     centerComponent={{ text: 'CONTACTES', style: { color: '#fff', fontSize: 20, } }}
                     rightComponent={rightC}
@@ -114,7 +131,7 @@ export default class ContactesScreen extends Component {
                 <View>
                     <Header
                         style={{ width: '100%' }}
-                        backgroundColor="#00E0B2"
+                        backgroundColor={backGroundHeader}
                         leftComponent={<Icon name='menu' color="#fff" onPress={() => this.obrirDrawer()} />}
                         centerComponent={{ text: 'CONTACTES', style: { color: '#fff', fontSize: 20, } }}
                         rightComponent={rightC}
@@ -137,7 +154,7 @@ export default class ContactesScreen extends Component {
                                     placeholder="Escriu aquí..."
                                     value={this.state.search}
                                     lightTheme
-                                    containerStyle={{ backgroundColor: '#00E0B2' }}
+                                    containerStyle={{ backgroundColor: backGroundHeader}}
                                     inputContainerStyle={{ backgroundColor: 'white' }}
                                 />
                                 <FlatList
