@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, Button, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Button, ActivityIndicator, Image } from 'react-native';
 import { Header, Icon } from 'react-native-elements'
 //import { Constants, Location, Permissions } from "expo";
 import MapView, { Marker } from 'react-native-maps';
@@ -10,6 +10,7 @@ import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import Geolocation from 'react-native-geolocation-service';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 
@@ -85,7 +86,7 @@ export default class UbicacióScreen extends Component {
     }
     onRegionChange(region) {
         this.setState({ regionCanvi: region });
-      }
+    }
 
     _getLocationAsync = async () => {
         let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -140,6 +141,7 @@ export default class UbicacióScreen extends Component {
                         initialRegion={this.state.region}
                         onRegionChange={this.onRegionChange}
                         followsUserLocation={true}
+                        
                     >
                         <Marker
                             coordinate={this.state.region}
@@ -148,16 +150,12 @@ export default class UbicacióScreen extends Component {
                         />
 
                     </MapView>
-                    {/*<MapView
-                    
-                    initialRegion={{
-                        latitude: 37.78825,
-                        longitude: -122.4324,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421
-                    }}
-                />
-                */}</View>
+{                /*    <View style={{ position: 'absolute', bottom: 100, right: 10, flex: 1 }}>
+                        <TouchableOpacity onPress={()=>this.onRegionChange()}>
+                            <Image source={require('./images/Logo.png')} style={{ width: 100, height: 100, borderRadius: 90 }} ></Image>
+                        </TouchableOpacity>
+        </View>*/}
+                </View>
             </View>
         );
     }

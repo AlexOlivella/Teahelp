@@ -8,6 +8,8 @@ import getDirections from 'react-native-google-maps-directions'
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
+import LocationIQ from 'react-native-locationiq';
+LocationIQ.init("82b56fb65371c7"); // use a valid API key
 
 export default class DireccionsScreen extends Component {
     constructor(props) {
@@ -19,7 +21,10 @@ export default class DireccionsScreen extends Component {
             isLoading: true,
             modeEdicio: "",
             currentLatitud: "",
-            currentLongitud:"",
+            currentLongitud: "",
+            destinationLat: "",
+            destinationLong: "",
+
 
         }
         this.arrayHolder = [];
@@ -113,40 +118,49 @@ export default class DireccionsScreen extends Component {
         //console.log(this.state.location.coords)
     };
 
-    handleGetDirections = () => {
+    async handleGetDirections(direccio) {
+        var lat
+        var lon
+        await LocationIQ.search(direccio)
+            .then(json => {
+                lat = json[0].lat;
+                lon = json[0].lon;
+            })
+            .catch(error => console.warn(error));
+        console.log(parseFloat(lat), parseFloat(lon));
         const data = {
-          destination: {
-            latitude: -33.8600024,
-            longitude: 18.697459
-          },
-          params: [
-            {
-              key: "travelmode",
-              value: "walking"        // may be "walking", "bicycling" or "transit" as well
+            destination: {
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon)
             },
-            {
-              key: "dir_action",
-              value: "navigate"       // this instantly initializes navigation using the given travel mode
-            }
-          ],/*
-          waypoints: [
-            {
-              latitude: -33.8600025,
-              longitude: 18.697452
-            },
-            {
-              latitude: -33.8600026,
-              longitude: 18.697453
-            },
-               {
-              latitude: -33.8600036,
-              longitude: 18.697493
-            }
-          ]*/
+            /* params: [
+                 {
+                     key: "travelmode",
+                     value: "walking"        // may be "walking", "bicycling" or "transit" as well
+                 },
+                 {
+                     key: "dir_action",
+                     value: "navigate"       // this instantly initializes navigation using the given travel mode
+                 }
+             ],/*
+           waypoints: [
+             {
+               latitude: -33.8600025,
+               longitude: 18.697452
+             },
+             {
+               latitude: -33.8600026,
+               longitude: 18.697453
+             },
+                {
+               latitude: -33.8600036,
+               longitude: 18.697493
+             }
+           ]*/
         }
-     
+
         getDirections(data)
-      }
+    }
     /*openGps = () => {
         var scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:'
         var url = scheme + '37.484847,-122.148386'
@@ -167,6 +181,19 @@ export default class DireccionsScreen extends Component {
           }
         });
       }*/
+    async pillaLatLong(direccio) {
+        await LocationIQ.search(direccio)
+            .then(json => {
+                var lat = json[0].lat;
+                var lon = json[0].lon;
+                this.setState({
+                    destinationLat: lat,
+                    destinationLong: lon
+                })
+                console.log(lat, lon);
+            })
+            .catch(error => console.warn(error));
+    }
     render() {
         let rightC
         let backGroundHeader
@@ -218,13 +245,13 @@ export default class DireccionsScreen extends Component {
                                     placeholder="Escriu aquí..."
                                     value={this.state.search}
                                     lightTheme
-                                    containerStyle={{ backgroundColor: backGroundHeader}}
+                                    containerStyle={{ backgroundColor: backGroundHeader }}
                                     inputContainerStyle={{ backgroundColor: 'white' }}
                                 />
                                 <FlatList
                                     data={this.state.llistaDireccions}
                                     renderItem={({ item }) =>
-                                        <TouchableOpacity onPress={() => this.handleGetDirections()}>
+                                        <TouchableOpacity onPress={() => this.handleGetDirections(item.direccio)}>
                                             <ListItem containerStyle={{ backgroundColor: "#fff", borderBottomWidth: 1, borderColor: '#00E0B2' }}
                                                 title={item.nom}
                                                 subtitle={item.direccio}

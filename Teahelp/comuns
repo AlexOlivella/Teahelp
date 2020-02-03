@@ -41,3 +41,6 @@ obrirDrawer = () => {
 
 
     color edicio = #D51313
+
+
+    apikey location iq= 82b56fb65371c7
