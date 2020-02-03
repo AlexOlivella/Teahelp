@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Picker, Platform, StyleSheet, Text, View, Button, TextInput, ScrollView, Alert, ToastAndroid, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { Picker, Platform, StyleSheet, Text, View, Button, TextInput, ScrollView, Alert, ToastAndroid, TouchableOpacity, Image, SafeAreaView, ActivityIndicator } from 'react-native';
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI';
 import { TextField } from 'react-native-material-textfield';
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -24,6 +24,7 @@ export default class Register extends Component {
             adreça: "",
             poblacio: "",
             codiPostal: "",
+            loading: "",
         }
 
     };
@@ -100,6 +101,7 @@ export default class Register extends Component {
         var { navigation } = this.props;
         var navigate = navigation.navigate;
         if (this.CheckTextInput()) {
+            this.setState({loading:true})
             let response = await FirebaseAPI.createUser(
                 this.state.firstName.trim(),
                 this.state.lastName.trim(),
@@ -109,7 +111,11 @@ export default class Register extends Component {
                 this.state.trastorn,
                 this.state.birthday,
                 this.createCode().toString(),
+                this.state.adreça,
+                this.state.poblacio, 
+                this.state.codiPostal
                 );
+                this.setState({loading:false})
             //console.log("birthday", this.state.birthday)
             if (response.isError) {
                 //if(response.error == 200)
@@ -149,6 +155,8 @@ export default class Register extends Component {
     }
     render() {
         //console.log(this.props)
+        let loader
+        if(this.state.loading) loader = <View><ActivityIndicator size="large" color="black"></ActivityIndicator></View>
         return (
             <SafeAreaView style={styles.container}>
 
@@ -164,6 +172,7 @@ export default class Register extends Component {
                         <View style={styles.inputs}>
                             <TextField
                                 label="Cognoms"
+                                autoCapitalize="words"
                                 onChangeText={lastName => this.setState({ lastName })}
                                 value={this.state.lastName}
                             />
@@ -214,6 +223,7 @@ export default class Register extends Component {
                                 isVisible={this.state.isDateTimePickerVisible}
                                 onConfirm={this.handleDatePicked}
                                 onCancel={this.hideDateTimePicker}
+                                maximumDate={new Date()}
                                 mode='date'
                             />
 
@@ -233,6 +243,7 @@ export default class Register extends Component {
                         <View style={styles.inputs}>
                             <TextField
                                 label="Adreça"
+                                autoCapitalize="words"
                                 onChangeText={(adreça) => this.setState({ adreça })}
                                 value={this.state.adreça}
                             />
@@ -240,6 +251,7 @@ export default class Register extends Component {
                         <View style={styles.inputs}>
                             <TextField
                                 label="Població"
+                                autoCapitalize="words"
                                 onChangeText={(poblacio) => this.setState({ poblacio })}
                                 value={this.state.poblacio}
                             />
@@ -253,6 +265,7 @@ export default class Register extends Component {
                             />
                         </View>
                     </View>
+                    {loader}
                     <View style={styles.seccioBotons}>
                         <View style={{ width: "90%" }} >
                             <Button

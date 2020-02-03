@@ -18,6 +18,7 @@ import PerfilUsuari from './screens/PerfilUsuari'
 import AfegirDireccions from './screens/AfegirDireccions';
 import AfegirPreferencies from './screens/AfegirPreferencies'
 import AfegirPictogrames from './screens/AfegirPictogrames'
+import MostrarVullPictogrames from './screens/MostrarVullPictogrames'
 
 const AuthStack = createStackNavigator(
   {
@@ -37,7 +38,8 @@ const Contactes = createStackNavigator(
 const Pictogrames = createStackNavigator(
   {
     PictogramesScreen: { screen: PictogramesScreen },
-    AfegirPictogrames:{screen:AfegirPictogrames}
+    AfegirPictogrames:{screen:AfegirPictogrames},
+    MostrarVullPictogrames:{screen: MostrarVullPictogrames}
   }
 )
 

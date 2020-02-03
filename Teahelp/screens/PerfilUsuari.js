@@ -122,7 +122,7 @@ export default class PerfilUsuari extends Component {
                     <ScrollView>
                         <View style={styles.textView}>
 
-                            <View style={[styles.dades, { paddingTop: 5 }]}>
+                            <View style={[styles.dades, { paddingTop: 20 }]}>
                                 <View style={styles.mitjaZona}>
                                     <Text style={styles.textFixe}>NOM</Text>
                                 </View>

@@ -4,7 +4,7 @@ import firebase from './../src/config';
 const db = firebase.firestore();
 import 'firebase/storage';
 
-export async function createUser(firstName, lastName, password, email, gender, transtorn, birthday, PINParental) {
+export async function createUser(firstName, lastName, password, email, gender, transtorn, birthday, PINParental, adreça, poblacio, codiPostal) {
     let docRef
     return await firebase.auth().createUserWithEmailAndPassword(email, password).then((res) => {
         docRef = db.collection("Usuaris")
@@ -15,6 +15,70 @@ export async function createUser(firstName, lastName, password, email, gender, t
             birthday: birthday,
             transtorn: transtorn,
             PINParental: PINParental,
+            adreça,
+            poblacio,
+            codiPostal
+        })
+        docRefPictogrames = docRef.doc(res.user.uid).collection("Pictogrames")
+        docRefPictogrames.doc("VULL ANAR AL COLE").set({
+            accio: "VULL ANAR A CASA",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FAnar%20al%20cole.png?alt=media&token=85dc6a2c-b42a-421e-b518-a762497229ed"
+        })
+        docRefPictogrames.doc("VULL ANAR").set({
+            accio: "VULL ANAR",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FAnar.png?alt=media&token=20fcdf48-098b-4774-86cd-6585264b9842"
+        })
+        docRefPictogrames.doc("VULL BEURE").set({
+            accio: "VULL BEURE",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FBeure.png?alt=media&token=cbbf414d-8258-4463-9604-6feaa39e034b"
+        })
+        docRefPictogrames.doc("VULL ANAR AMB BUS").set({
+            accio: "VULL ANAR AMB BUS",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FBus.png?alt=media&token=d17a78ab-7a50-473a-b604-71214f2cc124"
+        })
+        docRefPictogrames.doc("VULL ANAR A CASA").set({
+            accio: "VULL ANAR A CASA",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FCasa.png?alt=media&token=e3b387c1-b2ae-4b25-b953-bbf733f15d82"
+        })
+        docRefPictogrames.doc("VULL DORMIR").set({
+            accio: "VULL DORMIR",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FDormir.png?alt=media&token=24d0af29-cc30-4be6-9ce5-8e07f4ea1d71"
+        })
+        docRefPictogrames.doc("VULL ESCOLTAR").set({
+            accio: "VULL ESCOLTAR",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FEscoltar.png?alt=media&token=27446d7c-f9fc-454f-84d2-f9e0468bc28b"
+        })
+        docRefPictogrames.doc("VULL JUGAR").set({
+            accio: "VULL JUGAR",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FJugar.png?alt=media&token=4624f58d-655a-443d-968c-9955ca930937"
+        })
+        docRefPictogrames.doc("VULL MENJAR").set({
+            accio: "VULL MENJAR",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FMenjar.png?alt=media&token=7d50921f-af7e-4ec8-a06e-774a680f5270"
+        })
+        docRefPictogrames.doc("NO").set({
+            accio: "NO",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FNo.png?alt=media&token=4a0b0166-9c6c-41aa-b08e-368d85724e28"
+        })
+        docRefPictogrames.doc("VULL PARLAR").set({
+            accio: "VULL PARLAR",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FParlar.png?alt=media&token=7abd6d18-44a5-457c-b9fb-fedc96ceda29"
+        })
+        docRefPictogrames.doc("VULL SALUDAR").set({
+            accio: "VULL SALUDAR",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FSaludar.png?alt=media&token=abb1646c-dcc1-4344-b225-554b492001a3"
+        })
+        docRefPictogrames.doc("VULL SEURE").set({
+            accio: "VULL SEURE",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FSeure.png?alt=media&token=ad83fb4d-127c-439b-9fc9-1d7a9ddc1602"
+        })
+        docRefPictogrames.doc("SI").set({
+            accio: "SI",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FSi.png?alt=media&token=5680c890-31b9-4eea-92d0-8579d4b08a69"
+        })
+        docRefPictogrames.doc("VULL VEURE LA TELE").set({
+            accio: "VULL VEURE LA TELE",
+            url: "https://firebasestorage.googleapis.com/v0/b/teahelp-2c2af.appspot.com/o/Predeterminats%2FVeure%20la%20tele.png?alt=media&token=6ecf24b2-24cc-4fbe-b35f-ed5358fb79ed"
         })
         return { isError: false, error: "" };
     }).catch((error) => {
@@ -194,7 +258,7 @@ export async function crearPictograma(user_uid, accio, url) {
             return errorR
         }
         else await docRef.set({
-            accio: accio, 
+            accio: accio,
             url: url
         }).then(function (docRef) {
 
@@ -220,17 +284,17 @@ export async function getLListaPictogrames(user_uid) {
     });
     return resultat
 }
-export async function esborrarPictograma(user_uid, accio){
+export async function esborrarPictograma(user_uid, accio) {
     let docRef = db.collection("Usuaris").doc(user_uid).collection("Pictogrames").doc(accio)
     let storageRef = firebase.storage().ref().child(user_uid + '/pictogrames/' + accio)
-    
+
     return await docRef.delete().then(async function () {
         //console.log("Document successfully deleted!");
-        await storageRef.delete().then(function() {
+        await storageRef.delete().then(function () {
             // File deleted successfully
-          }).catch(function(error) {
+        }).catch(function (error) {
             // Uh-oh, an error occurred!
-          });
+        });
     }).catch(function (error) {
         console.error("Error removing document: ", error);
     });

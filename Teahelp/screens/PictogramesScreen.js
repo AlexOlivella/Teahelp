@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, Image, Modal, Button } from 'react-native';
 import { Header, Icon, SearchBar, ListItem, } from 'react-native-elements'
 import * as FirebaseAPI from '../firebaseAPI/firebaseAPI'
 import firebase from 'firebase'
@@ -14,8 +14,18 @@ export default class ContactesScreen extends Component {
             modeEdicio: "",
             llistaPictogrames: "",
             currentUser: "",
+            selected:{
+                
+            },
         }
 
+    }
+    select(element) {
+        let selected = this.state.selected;
+        selected[element] = !selected[element];
+        console.log(selected);
+        this.setState({ selected: selected })
+        
     }
     refresh() {
         this.getModeEdicio()
@@ -25,16 +35,16 @@ export default class ContactesScreen extends Component {
         this.getModeEdicio()
         this.getLlistaPictogrames()
     }
-    componentWillMount(){
-		this.listener = EventRegister.addEventListener('modeEdicio', (data) => {
+    componentWillMount() {
+        this.listener = EventRegister.addEventListener('modeEdicio', (data) => {
             /*this.setState({
 				data: data.toString(),
                 modeEdicio:data.toString(),
 			})*/
-			this.getModeEdicio()
+            this.getModeEdicio()
         })
-	}
-	componentWillUnmount() {
+    }
+    componentWillUnmount() {
         EventRegister.removeEventListener(this.listener)
     }
     static navigationOptions = {
@@ -65,17 +75,31 @@ export default class ContactesScreen extends Component {
             isLoading: false
         })
     }
-
+    mostraVull() {
+        let opcions = []
+        for (let opcio in this.state.selected) {
+            if (this.state.selected[opcio])
+                opcions.push(opcio)
+        }
+        this.props.navigation.navigate(
+                "MostrarVullPictogrames",
+                {
+                    opcions: opcions
+                }
+            )
+            //console.log("medicaments")
+        
+    }
 
     render() {
         let rightC
         let backGroundHeader
-        if (this.state.modeEdicio){
-             rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirPictograma()} ></Icon>
-             backGroundHeader = "#D51313"
+        if (this.state.modeEdicio) {
+            rightC = <Icon name='settings' color="#fff" onPress={() => this.afegirPictograma()} ></Icon>
+            backGroundHeader = "#D51313"
 
-            }
-            else   backGroundHeader = "#00E0B2"
+        }
+        else backGroundHeader = "#00E0B2"
         if (this.state.isLoading) return (<View style={{ flex: 1 }}>
             <View>
                 <Header
@@ -106,12 +130,17 @@ export default class ContactesScreen extends Component {
                         <FlatList
                             data={this.state.llistaPictogrames}
                             renderItem={({ item }) =>
-                                <TouchableOpacity onPress={() => { }}>
-                                    <ListItem containerStyle={{ backgroundColor: "#fff", borderBottomWidth: 1, borderColor: '#00E0B2' }}
-                                        title={item.accio}
-                                        rightIcon={<Image source={{uri: item.imatge}} style={{width:100, height:100}} resizeMode="contain"></Image>}
+                                <TouchableOpacity onPress={() => this.select(item.accio)}>
+                                    <ListItem
+                                        containerStyle={this.state.selected[item.accio] ? styles.seleccionat : styles.noSeleccionat}
+                                        title={<View style={{ alignItems: 'center' }}>
+                                            <Image source={{ uri: item.imatge }} style={{ width: 100, height: 100 }} resizeMode="contain"></Image>
+                                        </View>}
+                                        //rightIcon={<Image source={{uri: item.imatge}} style={{width:100, height:100}} resizeMode="contain"></Image>}
+                                        subtitle={item.accio}
                                         titleStyle={{ fontSize: 20 }}
-                                        subtitleStyle={{ paddingTop: 10, fontSize: 20 }}
+
+                                        subtitleStyle={{ paddingTop: 10, fontSize: 20, textAlign: 'center' }}
                                     />
                                 </TouchableOpacity>
                             }
@@ -119,6 +148,7 @@ export default class ContactesScreen extends Component {
                         />
                     </ScrollView>
                 </SafeAreaView>
+                <Button onPress={()=> this.mostraVull()} title="Mostrar vull"></Button>
             </View>
 
         );
@@ -137,5 +167,17 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 30,
         textAlign: 'justify'
+    },
+    noSeleccionat: {
+        backgroundColor: "#fff",
+        borderBottomWidth: 1,
+        borderColor: '#00E0B2',
+        flexDirection: 'row'
+    },
+    seleccionat: {
+        backgroundColor: "#DADDE2",
+        borderBottomWidth: 1,
+        borderColor: '#00E0B2',
+        flexDirection: 'row'
     }
 });
