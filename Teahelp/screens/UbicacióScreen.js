@@ -26,7 +26,7 @@ export default class UbicacióScreen extends Component {
             longitudeDelta: 0.005,
             latitudeDelta: 0.005,
             loading: "",
-            region: "",
+            region: {},
             regionCanvi: "",
             markers: []
         }
@@ -80,8 +80,8 @@ export default class UbicacióScreen extends Component {
         this.setState({
             latitude: this.state.location.coords.latitude,
             longitude: this.state.location.coords.longitude,
-            region: regionInicial
-
+            region: regionInicial,
+            loading: false,
         })
     }
     onRegionChange(region) {
@@ -97,7 +97,7 @@ export default class UbicacióScreen extends Component {
         }
         this.setState({ loading: true })
         let location = await Location.getCurrentPositionAsync({});
-        this.setState({ location, loading: false, });
+        this.setState({ location});
         this.getInitialState()
     };
 
@@ -118,11 +118,8 @@ export default class UbicacióScreen extends Component {
                     <ActivityIndicator size="large" color="black"></ActivityIndicator>
                 </View>
             </View>)
-        let text = 'Waiting..';
         if (this.state.errorMessage) {
             Alert.alert(this.state.errorMessage);
-        } else if (this.state.location) {
-            text = JSON.stringify(this.state.location);
         }
         return (
             <View style={styles.container}>

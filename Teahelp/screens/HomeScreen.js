@@ -27,10 +27,10 @@ export default class HomeScreen extends Component {
 			numPreferit3: "",
 			nomUsuari: "",
 			data: 'no data',
-			location:"",
+			location: "",
 			currentLatitud: "",
 			currentLongitud: "",
-			currentAdress: "",
+			currentAddress: "",
 		};
 
 	}
@@ -86,13 +86,13 @@ export default class HomeScreen extends Component {
 		})
 
 	}
-    componentWillMount() {
-        if (Platform.OS === 'android' && !Constants.isDevice) {
-            this.setState({
-                errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
-            });
-        } else {
-            this._getLocationAsync();
+	componentWillMount() {
+		if (Platform.OS === 'android' && !Constants.isDevice) {
+			this.setState({
+				errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+			});
+		} else {
+			this._getLocationAsync();
 		}
 	}
 	async getDades() {
@@ -102,51 +102,54 @@ export default class HomeScreen extends Component {
 		this.setState({ nomUsuari: result.firstName + " " + result.lastName })
 	}
 	_getLocationAsync = async () => {
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);
-        if (status !== 'granted') {
-            this.setState({
-                errorMessage: "No s'ha permès l'accés a l'ubicació",
-            });
-        }
-        this.setState({ loading: true })
-        let location = await Location.getCurrentPositionAsync({});
-		this.setState({ 
-			location, 
+		let { status } = await Permissions.askAsync(Permissions.LOCATION);
+		if (status !== 'granted') {
+			this.setState({
+				errorMessage: "No s'ha permès l'accés a l'ubicació",
+			});
+		}
+		this.setState({ loading: true })
+		let location = await Location.getCurrentPositionAsync({});
+		//console.log("location", location)
+		this.getAddress(location.coords.latitude, location.coords.longitude)
+		this.setState({
+			location,
 			loading: false,
-            latitude: this.state.location.coords.latitude,
-            longitude: this.state.location.coords.longitude,
-            region: regionInicial
-
 		})
-		this.getAddress()
+
+
 	};
-	
+
 
 	async trucaPreferits() {
-		if(this.state.numPreferit1 != "" ){
+		if (this.state.numPreferit1 != "") {
 			this._getLocationAsync()
-		const isAvailable = await SMS.isAvailableAsync();
-		if (isAvailable) {
+			const isAvailable = await SMS.isAvailableAsync();
+			if (isAvailable) {
 
-			const { result } = await SMS.sendSMSAsync(
-				[this.state.numPreferit1, this.state.numPreferit2, this.state.numPreferit3,],
-				"Hola, sóc " + this.state.nomUsuari + " i necessito ajuda, estic a " + this.state.currentAdress
-			);
-		}}
+				const { result } = await SMS.sendSMSAsync(
+					[this.state.numPreferit1, this.state.numPreferit2, this.state.numPreferit3,],
+					"Hola, sóc " + this.state.nomUsuari + " i necessito ajuda, estic a " + this.state.currentAddress.road + ", " + this.state.currentAddress.house_number 
+					+ ", " + this.state.currentAddress.city + ", " + this.state.currentAddress.state + ", " + this.state.currentAddress.country + " a les coordenades de " +
+					this.state.location.coords.latitude + " " + this.state.location.coords.longitude + ". Amb aquest link podràs veure on sóc: " + 
+					"https://www.google.com/maps/search/?api=1&query="+ this.state.location.coords.latitude + "," + this.state.location.coords.longitude 
+				);
+			}
+		}
 		else {
 			Alert.alert("Alerta", "No podem enviar cap missatge perquè no tens cap contacte agregat, prova d'afegir-ne un a la pantalla de contactes i afegeix-los a preferits")
 		}
 
 	}
-	async getAddress(){
-		var adress
-		await LocationIQ.reverse(this.state.currentLatitud, this.state.currentLongitud)
-        .then(json => {
-            address = json.address;
-            console.log(adress);
-        })
-		.catch(error => console.warn(error));
-		this.setState({currentAdress: adress})
+	async getAddress(lat, lon) {
+		let address
+		await LocationIQ.reverse(lat, lon)
+			.then(json => {
+				address = json.address;
+				console.log("address", address);
+			})
+			.catch(error => console.warn(error));
+		this.setState({ currentAddress: address })
 	}
 	render() {
 		let rightC
