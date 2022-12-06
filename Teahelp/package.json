@@ -34,7 +34,7 @@
     "react-native-geolocation-service": "^3.1.0",
     "react-native-gesture-handler": "^1.5.3",
     "react-native-google-maps-directions": "^2.1.1",
-    "react-native-google-places-autocomplete": "^1.4.0",
+    "react-native-google-places-autocomplete": "^1.9.0",
     "react-native-hide-show-password-input": "^1.1.0",
     "react-native-immediate-phone-call": "^1.0.0",
     "react-native-locationiq": "^0.1.0",
